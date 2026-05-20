@@ -10,7 +10,7 @@ public class Barricade : MonoBehaviour
         hp -= atk;
         if(hp <= 0)
         {
-            GameManager.Instance.RequestGameOver();
+            // GameManager.Instance.RequestGameOver();
         }
     }
 }

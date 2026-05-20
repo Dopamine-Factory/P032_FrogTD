@@ -36,7 +36,7 @@ public class GameOverPopup : PopupBase
 
     public void HomeButtonOn()
     {
-        GameManager.Instance.ReturnToHome();
+        // GameManager.Instance.ReturnToHome();
         SoundManager.Instance.PlayEffect("BUTTON_04");
 
         base.Close();

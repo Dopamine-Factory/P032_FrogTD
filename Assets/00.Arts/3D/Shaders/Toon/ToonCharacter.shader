@@ -6,8 +6,9 @@ Shader "JOJO/Toon/ToonCharacter"
         _Color          ("Base Color", Color)            = (1,1,1,1)
         _ShadowColor    ("Shadow Color", Color)          = (0.45,0.38,0.60,1)
         _ShadowStrength ("Shadow Strength", Range(0,1))  = 0.75
-        _ShadowSmooth   ("Shadow Smooth", Range(0,0.5))  = 0.12
+        _ShadowSmooth   ("Shadow Smooth", Range(0,1.0))  = 0.12
         _ShadowThreshold("Shadow Threshold",Range(-1,1)) = 0.05
+        _NormalSphere   ("Normal Sphere Blend", Range(0,1)) = 0.0
         _MidtoneColor   ("Midtone Tint", Color)          = (1.0,0.97,0.93,1)
         _HighlightColor ("Highlight Tint", Color)        = (1.0,0.98,0.92,1)
         _SpecColor2     ("Specular Color", Color)        = (1,0.98,0.90,1)
@@ -52,6 +53,7 @@ Shader "JOJO/Toon/ToonCharacter"
             float  _ShadowStrength;
             float  _ShadowSmooth;
             float  _ShadowThreshold;
+            float  _NormalSphere;
             float4 _MidtoneColor;
             float4 _HighlightColor;
             float4 _SpecColor2;
@@ -87,8 +89,12 @@ Shader "JOJO/Toon/ToonCharacter"
                 v2f o;
                 o.pos         = UnityObjectToClipPos(v.vertex);
                 o.uv          = TRANSFORM_TEX(v.uv, _MainTex);
-                o.worldNormal = UnityObjectToWorldNormal(v.normal);
-                o.worldPos    = mul(unity_ObjectToWorld, v.vertex).xyz;
+                float3 worldPos   = mul(unity_ObjectToWorld, v.vertex).xyz;
+                float3 objCenter  = mul(unity_ObjectToWorld, float4(0,0,0,1)).xyz;
+                float3 sphereN    = normalize(worldPos - objCenter);
+                float3 meshN      = UnityObjectToWorldNormal(v.normal);
+                o.worldNormal     = normalize(lerp(meshN, sphereN, _NormalSphere));
+                o.worldPos        = worldPos;
                 TRANSFER_SHADOW(o);
                 UNITY_TRANSFER_FOG(o, o.pos);
                 return o;
@@ -167,6 +173,7 @@ Shader "JOJO/Toon/ToonCharacter"
             float4 _Color;
             float  _ShadowSmooth;
             float  _ShadowThreshold;
+            float  _NormalSphere;
 
             struct appdata_a
             {
@@ -190,8 +197,12 @@ Shader "JOJO/Toon/ToonCharacter"
                 v2f_a o;
                 o.pos         = UnityObjectToClipPos(v.vertex);
                 o.uv          = TRANSFORM_TEX(v.uv, _MainTex);
-                o.worldNormal = UnityObjectToWorldNormal(v.normal);
-                o.worldPos    = mul(unity_ObjectToWorld, v.vertex).xyz;
+                float3 worldPos   = mul(unity_ObjectToWorld, v.vertex).xyz;
+                float3 objCenter  = mul(unity_ObjectToWorld, float4(0,0,0,1)).xyz;
+                float3 sphereN    = normalize(worldPos - objCenter);
+                float3 meshN      = UnityObjectToWorldNormal(v.normal);
+                o.worldNormal     = normalize(lerp(meshN, sphereN, _NormalSphere));
+                o.worldPos        = worldPos;
                 TRANSFER_SHADOW(o);
                 UNITY_TRANSFER_FOG(o, o.pos);
                 return o;

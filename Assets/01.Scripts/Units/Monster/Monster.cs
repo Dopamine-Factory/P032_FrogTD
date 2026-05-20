@@ -2,20 +2,16 @@ using UnityEngine;
 
 public class Monster : MonoBehaviour
 {
-    public float moveSpeed = 3.0f;
-    public float atkInterval = 1.0f;
-    public float atk = 1.0f;
-    public float hp = 1;
+    public MonsterAI AI { get; private set; }
 
 
-    MonsterAI ai;
-
-
-    public void Spawn()
+    public void Spawn(GameNormal game)
     {
-        ai ??= new MonsterAI();
-        ai.SetMonster(this);
-        ai.MoveStart();
+        AI ??= new MonsterAI();
+        AI.DeadCallback = game.RemoveMonster;
+        AI.ATKCallback = game.AttackBarricade;
+        AI.SetMonster(this);
+        AI.MoveStart();
     }
 
 

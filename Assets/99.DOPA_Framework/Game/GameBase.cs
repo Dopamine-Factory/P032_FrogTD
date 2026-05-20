@@ -17,16 +17,31 @@ public abstract class GameBase : MonoBehaviour
         set => gameContainers = value;
     }
 
-    public virtual void Initialize(GameManager manager)
+    public virtual void Initialize()
     {
-        gameManager = manager;
         InitializeGameComponents();
+
         SetupUI();
+
+        GameManager.GameState.Subscribe(GameStateController.GameState.GameStart, GameStart);
+        GameManager.GameState.Subscribe(GameStateController.GameState.GameClear, GameClear);
+        GameManager.GameState.Subscribe(GameStateController.GameState.GameOver, GameOver);
+        GameManager.GameState.Subscribe(GameStateController.GameState.Resume, GameResume);
+        GameManager.GameState.Subscribe(GameStateController.GameState.Paused, GamePause);
+    }
+
+    public virtual void Dispose()
+    {
+        GameManager.GameState.Unsubscribe(GameStateController.GameState.GameStart, GameStart);
+        GameManager.GameState.Unsubscribe(GameStateController.GameState.GameClear, GameClear);
+        GameManager.GameState.Unsubscribe(GameStateController.GameState.GameOver, GameOver);
+        GameManager.GameState.Unsubscribe(GameStateController.GameState.Resume, GameResume);
+        GameManager.GameState.Unsubscribe(GameStateController.GameState.Paused, GamePause);
     }
 
     protected virtual void InitializeGameComponents()
     {
-        
+
     }
 
     protected virtual void SetupUI()
@@ -54,61 +69,23 @@ public abstract class GameBase : MonoBehaviour
         gameUI.sizeDelta = Vector2.zero;
     }
 
-    public virtual void StartGameplay()
-    {
-        Debug.Log("[GameBase] StartGameplay");
-    }
-
-    public virtual void PauseGameplay()
-    {
-        Debug.Log("[GameBase] PauseGameplay");
-    }
-
-    public virtual void ResumeGameplay()
-    {
-        Debug.Log("[GameBase] ResumeGameplay");
-    }
-
     public virtual void Restart()
     {
-        Debug.Log("[GameBase] Restart");
         InitializeGameComponents();
     }
 
     public virtual void ReturnToHome()
     {
-        Debug.Log("[GameBase] ReturnToHome");
         InitializeGameComponents();
     }
 
-    public virtual void StartGame() => gameManager?.StartGame();
-    public virtual void PauseGame() => gameManager?.PauseGame();
-    public virtual void ResumeGame() => gameManager?.ResumeGame();
+    public virtual void GameStart() { }
+    public virtual void GamePause() { }
+    public virtual void GameResume() { }
+    public virtual void GameClear() { }
+    public virtual void GameOver() { }
 
-    public virtual void GameOver() => gameManager?.RequestGameOver();
+    public virtual void OnStartJoystickControll() { }
+    public virtual void OnControllJoystick(Vector2 joyPos) { }
 
-    public bool IsGameActive
-    {
-        get
-        {
-            if (GameStateManager.Instance == null)
-            {
-                return false;
-            }
-
-            return GameStateManager.Instance.CurrentState == GameState.Playing;
-        }
-    }
-
-    public virtual void OnStartJoystickControll()
-    {
-    }
-
-    public virtual void OnControllJoystick(Vector2 joyPos)
-    {
-    }
-
-    public abstract int GetCurrentScore();
-
-    public abstract bool CheckWinCondition();
 }

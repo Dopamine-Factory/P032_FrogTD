@@ -122,13 +122,11 @@ public class UIManager : MonoBehaviour
 
     public void OnRestartButton()
     {
-        GameManager.Instance.RestartGame();
         PlayButtonSound(2);
     }
 
     public void OnHomeButton()
     {
-        GameManager.Instance.ReturnToHome();
         PlayButtonSound(3);
     }
 

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__UnityMCP__manage_asset",
+      "mcp__UnityMCP__create_script",
+      "mcp__UnityMCP__execute_menu_item",
+      "mcp__UnityMCP__read_console"
+    ]
+  }
+}

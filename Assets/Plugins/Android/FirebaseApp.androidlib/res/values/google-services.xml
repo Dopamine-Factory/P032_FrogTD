@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:keep="@string/gcm_defaultSenderId,@string/google_storage_bucket,@string/project_id,@string/google_api_key,@string/google_crash_reporting_api_key,@string/google_app_id,@string/default_android_client_id,@string/default_web_client_id">
+  <string name="gcm_defaultSenderId" translatable="false">428887493264</string>
+  <string name="google_storage_bucket" translatable="false">project000-dopaminefa.firebasestorage.app</string>
+  <string name="project_id" translatable="false">project000-dopaminefa</string>
+  <string name="google_api_key" translatable="false">AIzaSyAeOOTyqG3rTlPnubGxzNDdOc10Y3dlI0I</string>
+  <string name="google_crash_reporting_api_key" translatable="false">AIzaSyAeOOTyqG3rTlPnubGxzNDdOc10Y3dlI0I</string>
+  <string name="google_app_id" translatable="false">1:428887493264:android:0f6d626cd991230391a615</string>
+  <string name="default_android_client_id" translatable="false">428887493264-v514vv80f7bnpnm822pb7mtaqgsmaec4.apps.googleusercontent.com</string>
+  <string name="default_web_client_id" translatable="false">428887493264-8drk9s0f1ua69fssj2olttgihn9h4bgn.apps.googleusercontent.com</string>
+</resources>

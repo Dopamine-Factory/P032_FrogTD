@@ -66,5 +66,5 @@
     "explorer.fileNesting.patterns": {
         "*.sln": "*.csproj"
     },
-    "dotnet.defaultSolution": "FrogTD.slnx"
+    "dotnet.defaultSolution": "P032_FrogTD.slnx"
 }

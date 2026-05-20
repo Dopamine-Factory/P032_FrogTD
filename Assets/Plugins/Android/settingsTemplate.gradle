@@ -1,0 +1,36 @@
+pluginManagement {
+    repositories {
+        **ARTIFACTORYREPOSITORY**
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+
+include ':launcher', ':unityLibrary'
+**INCLUDES**
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    repositories {
+        **ARTIFACTORYREPOSITORY**
+        google()
+        mavenCentral()
+// Android Resolver Repos Start
+        def unityProjectPath = $/file:///**DIR_UNITYPROJECT**/$.replace("\\", "/")
+        maven {
+            url (unityProjectPath + "/Assets/GeneratedLocalRepo/10.Thirdparty/Firebase/m2repository") // Assets/10.Thirdparty/Firebase/Editor/AnalyticsDependencies.xml:18, Assets/10.Thirdparty/Firebase/Editor/AppDependencies.xml:22, Assets/10.Thirdparty/Firebase/Editor/AuthDependencies.xml:20, Assets/10.Thirdparty/Firebase/Editor/CrashlyticsDependencies.xml:20, Assets/10.Thirdparty/Firebase/Editor/FirestoreDependencies.xml:20, Assets/10.Thirdparty/Firebase/Editor/RemoteConfigDependencies.xml:20
+        }
+        maven {
+            url "https://maven.google.com/" // Assets/10.Thirdparty/GoogleMobileAds/Editor/GoogleMobileAdsDependencies.xml:7, Assets/10.Thirdparty/GoogleMobileAds/Editor/GoogleMobileAdsDependencies.xml:12, Assets/10.Thirdparty/GoogleMobileAds/Editor/GoogleMobileAdsDependencies.xml:17, Assets/10.Thirdparty/GoogleMobileAds/Editor/GoogleUmpDependencies.xml:7
+        }
+        maven {
+            url (unityProjectPath + "/Assets/GeneratedLocalRepo/10.Thirdparty/GooglePlayGames/com.google.play.games/Editor/m2repository") // Assets/10.Thirdparty/GooglePlayGames/com.google.play.games/Editor/GooglePlayGamesPluginDependencies.xml:11
+        }
+        mavenLocal()
+// Android Resolver Repos End
+        flatDir {
+            dirs "${project(':unityLibrary').projectDir}/libs"
+        }
+    }
+}

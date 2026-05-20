@@ -22,16 +22,6 @@ public class GameNormal : GameBase
 
     protected override void InitializeGameComponents()
     {
-        barricade.DeadCallback = OnDead;
-    }
-
-    private void OnDead()
-    {
-
-    }
-
-    public override void StartGameplay()
-    {
         GameInitialize().Forget();
     }
 
@@ -40,9 +30,13 @@ public class GameNormal : GameBase
         await SetCurrentStageData(1, 1);
 
         barricade.hp = 1;
-
         gamePlayTime = 0;
 
+        GameManager.GameState.ChangeState(GameStateController.GameState.GameStart);
+    }
+
+    public override void GameStart()
+    {
         gameTimerDisposal?.Dispose();
         gameTimerDisposal = Observable.EveryUpdate().Subscribe(TimeUpdate);
     }
@@ -64,16 +58,15 @@ public class GameNormal : GameBase
                     spawnPoint.y = stageSpawnData.stageMonsterDatas[j].PosY;
 
                     var monster = ResourceManager.Instance.GetInstance<Monster>();
-                    
+
 
                     monster.transform.SetParent(gameContainers[1]);
                     monster.transform.position = spawnPoint;
                     monsters.Add(monster);
-                    monster.Spawn();
+                    monster.Spawn(this);
                 }
             }
         }
-
     }
 
     private async UniTask SetCurrentStageData(int stage, int wave)
@@ -89,19 +82,18 @@ public class GameNormal : GameBase
     }
 
 
-    public override bool CheckWinCondition()
-    {
-        return false;
-    }
-
-    public override int GetCurrentScore()
-    {
-        return 0;
-    }
-
-
     public void AttackBarricade(float atk)
     {
         barricade.Hit(atk);
+    }
+
+    public void RemoveMonster(Monster monster)
+    {
+        monsters.Remove(monster);
+
+        if (monsters.Count == 0)
+        {
+            GameManager.GameState.ChangeState(GameStateController.GameState.GameClear);
+        }
     }
 }

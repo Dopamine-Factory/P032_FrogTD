@@ -322,7 +322,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6472813132286074829
 RectTransform:
   m_ObjectHideFlags: 0
@@ -366,7 +366,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 0.047058824, g: 0.047058824, b: 0.047058824, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 0
   m_OnCullStateChanged:
@@ -469,6 +469,7 @@ GameObject:
   - component: {fileID: 5335290902571156808}
   - component: {fileID: 2939618578056962784}
   - component: {fileID: 7893878123547128631}
+  - component: {fileID: 3665529538219654248}
   m_Layer: 5
   m_Name: SlotChr
   m_TagString: Untagged
@@ -519,13 +520,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 802548937716c34469088e34b6ab7c63, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0fa0cfa6d12d70c4099f52e4e5fa7976, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -579,6 +580,23 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &3665529538219654248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6991866119055139477}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 070d5168e2e02489e85b7accc038db66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ChrSlotUI
+  weaponSlot: {fileID: 4183094960120708409}
+  weaponIcon: {fileID: 5040198011958309492}
+  lvTxt: {fileID: 1665970663922606647}
+  lockOverlay: {fileID: 8816269503122613046}
+  heroImage: {fileID: 563462829479780208}
 --- !u!1 &7510942505321515899
 GameObject:
   m_ObjectHideFlags: 0
@@ -819,12 +837,12 @@ GameObject:
   - component: {fileID: 6363798541686940985}
   - component: {fileID: 4828001515030511}
   m_Layer: 5
-  m_Name: Unlock
+  m_Name: Lock
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &6228850785967506531
 RectTransform:
   m_ObjectHideFlags: 0
@@ -866,13 +884,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0fa0cfa6d12d70c4099f52e4e5fa7976, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 802548937716c34469088e34b6ab7c63, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

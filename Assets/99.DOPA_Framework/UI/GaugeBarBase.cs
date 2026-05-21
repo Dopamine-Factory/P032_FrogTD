@@ -70,9 +70,6 @@ public class GaugeBarBase : MonoBehaviour
 
     public void SetGaugePercent(float value = 0.0f)
     {
-        Debug.Log($"SetGaugePercent : {value * 100}%");
-
-
         SetGauge(maxValue * value);
     }
 

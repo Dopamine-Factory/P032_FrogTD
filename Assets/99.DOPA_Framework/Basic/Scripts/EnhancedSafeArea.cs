@@ -117,10 +117,7 @@ public class EnhancedSafeArea : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log("[SafeArea] Awake START!");
-        Debug.Log("[SafeArea] Awake! GameObject.active=" + gameObject.activeInHierarchy);
-        Debug.Log("[SafeArea] Script.enabled=" + enabled);
-        Debug.Log("[SafeArea] Canvas=" + GetComponent<Canvas>() != null);
+        EnhancedSafeAreaRegister.Instance.RegisterSafeArea(this);
 
         canvasScaler = GetComponent<CanvasScaler>();
 
@@ -568,5 +565,12 @@ public class EnhancedSafeArea : MonoBehaviour
         float height = boundsSize.y + bannerWorld * 2f;
         float width = boundsSize.x;
         return Mathf.Max(height * 0.5f, width * 0.5f / aspect);
+    }
+
+
+
+    private void OnDestroy()
+    {
+        EnhancedSafeAreaRegister.Instance.UnregisterSafeArea(this);
     }
 }

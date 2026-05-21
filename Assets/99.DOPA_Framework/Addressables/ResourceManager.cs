@@ -305,8 +305,11 @@ public class ResourceManager : BaseSystemManager<ResourceManager>
         taskQueue.Enqueue(LoadAtlas());
 
         // ex:
+        taskQueue.Enqueue(Load<Hero>());
         taskQueue.Enqueue(Load<Monster>());
-        // taskQueue.Enqueue(LoadLabel("Ingrediant", 20));
+        taskQueue.Enqueue(Load<Projectile>());
+        taskQueue.Enqueue(LoadLabel("Heros", 1));
+        taskQueue.Enqueue(LoadLabel("Projectiles", 3));
 
         totalQueue = taskQueue.Count;
         completeQueue = 0;

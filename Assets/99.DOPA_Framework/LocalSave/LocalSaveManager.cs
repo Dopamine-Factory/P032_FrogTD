@@ -1,28 +1,198 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using Newtonsoft.Json;
-using UnityEngine;
-using Cysharp.Threading.Tasks;
-using System.Threading.Tasks;
-using UnityEngine.SceneManagement;
-using UniRx;
 using System.Threading;
-
-
-
-
-#if UNITY_EDITOR
+using Cysharp.Threading.Tasks;
+using Newtonsoft.Json;
+using UniRx;
 using UnityEditor;
-#endif
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using Unit = UniRx.Unit;
 
 public abstract class ILocalSave
 {
 }
 
 #region DATA CLASS
+
+public class LocalSaveBattle : ILocalSave
+{
+    [System.Serializable]
+    public class HeroInfo
+    {
+        public uint heroID;
+        public uint level;
+        public uint haveCount;
+    }
+
+    [Serializable]
+    public class EquippedSlotInfo
+    {
+        public bool IsUnlocked;
+        public uint HeroID;
+        public WeaponData WeaponData;
+    }
+
+    [Serializable]
+    public class MergeBoardInfo
+    {
+        public bool IsUnlocked;
+        public WeaponData WeaponData;
+    }
+
+    [JsonProperty] public EquippedSlotInfo[] equippedHeroDatas = new EquippedSlotInfo[7];
+    [JsonProperty] public MergeBoardInfo[] mergeBoardWeaponIDs = new MergeBoardInfo[28];
+    [JsonProperty] private Dictionary<uint, HeroInfo> heroList = new Dictionary<uint, HeroInfo>();
+    [JsonProperty] public uint maxStage;
+
+    public HeroInfo GetHeroInfo(uint heroID)
+    {
+        if (heroList.TryGetValue(heroID, out HeroInfo info))
+        {
+            return info;
+        }
+        return null;
+    }
+
+    public void SetHeroInfo(uint heroID, uint level, uint haveCount)
+    {
+        if (heroList.ContainsKey(heroID))
+        {
+            heroList[heroID].level = level;
+            heroList[heroID].haveCount = haveCount;
+        }
+        else
+        {
+            heroList.Add(heroID, new HeroInfo { heroID = heroID, level = level, haveCount = haveCount });
+        }
+
+        LocalSaveManager.Instance.OnChangeData(this);
+    }
+
+    public EquippedSlotInfo GetEquippedSlotInfo(int slotIndex)
+    {
+        if (slotIndex >= equippedHeroDatas.Length)
+        {
+            Debug.LogError($"Invalid slot index: {slotIndex}");
+            return null;
+        }
+
+        if(slotIndex == 0 && equippedHeroDatas[slotIndex] == null)
+        {
+            EquippedSlotInfo info = new EquippedSlotInfo();
+            info.HeroID = 100001;
+            info.IsUnlocked = true;
+            equippedHeroDatas[slotIndex] = info;
+        }
+
+        return equippedHeroDatas[slotIndex];
+    }
+
+    public void SetEquippedHero(int slotIndex, uint heroID, WeaponData weaponData)
+    {
+        if (slotIndex >= equippedHeroDatas.Length)
+        {
+            Debug.LogError($"Invalid slot index: {slotIndex}");
+            return;
+        }
+
+        if (equippedHeroDatas[slotIndex] == null)
+        {
+            equippedHeroDatas[slotIndex] = new EquippedSlotInfo();
+        }
+
+        equippedHeroDatas[slotIndex].IsUnlocked = true;
+        equippedHeroDatas[slotIndex].HeroID = heroID;
+        equippedHeroDatas[slotIndex].WeaponData = new WeaponData { weaponType = weaponData.weaponType, level = weaponData.level };
+
+        LocalSaveManager.Instance.OnChangeData(this);
+    }
+
+    public void SetEquippedWeapon(int slotIndex, WeaponData weaponData)
+    {
+        if (slotIndex >= equippedHeroDatas.Length)
+        {
+            Debug.LogError($"Invalid slot index: {slotIndex}");
+            return;
+        }
+
+        if (equippedHeroDatas[slotIndex] == null)
+        {
+            equippedHeroDatas[slotIndex] = new EquippedSlotInfo();
+        }
+
+        equippedHeroDatas[slotIndex].WeaponData = new WeaponData { weaponType = weaponData.weaponType, level = weaponData.level };
+
+        LocalSaveManager.Instance.OnChangeData(this);
+    }
+
+    public void UnlockEquippedSlot(uint slotIndex)
+    {
+        if (slotIndex >= equippedHeroDatas.Length)
+        {
+            Debug.LogError($"Invalid slot index: {slotIndex}");
+            return;
+        }
+
+        if (equippedHeroDatas[slotIndex] == null)
+        {
+            equippedHeroDatas[slotIndex] = new EquippedSlotInfo();
+        }
+        equippedHeroDatas[slotIndex].IsUnlocked = true;
+
+        LocalSaveManager.Instance.OnChangeData(this);
+    }
+
+    public MergeBoardInfo GetMergeBoardInfo(int boardIndex)
+    {
+        if (boardIndex >= mergeBoardWeaponIDs.Length)
+        {
+            Debug.LogError($"Invalid board index: {boardIndex}");
+            return null;
+        }
+
+        return mergeBoardWeaponIDs[boardIndex];
+    }
+
+    public void SetMergeBoardWeapon(int boardIndex, WeaponData weaponData)
+    {
+        if (boardIndex >= mergeBoardWeaponIDs.Length)
+        {
+            Debug.LogError($"Invalid board index: {boardIndex}");
+            return;
+        }
+
+        if (mergeBoardWeaponIDs[boardIndex] == null)
+        {
+            mergeBoardWeaponIDs[boardIndex] = new MergeBoardInfo();
+        }
+
+        mergeBoardWeaponIDs[boardIndex].IsUnlocked = true;
+        mergeBoardWeaponIDs[boardIndex].WeaponData = new WeaponData { weaponType = weaponData.weaponType, level = weaponData.level };
+
+        LocalSaveManager.Instance.OnChangeData(this);
+    }
+
+    public void UnlockMergeBoard(int boardIndex)
+    {
+        if (boardIndex >= mergeBoardWeaponIDs.Length)
+        {
+            Debug.LogError($"Invalid board index: {boardIndex}");
+            return;
+        }
+
+        if (mergeBoardWeaponIDs[boardIndex] == null)
+        {
+            mergeBoardWeaponIDs[boardIndex] = new MergeBoardInfo();
+        }
+        mergeBoardWeaponIDs[boardIndex].IsUnlocked = true;
+
+        LocalSaveManager.Instance.OnChangeData(this);
+    }
+
+}
 
 public class LocalSaveCurrency : ILocalSave
 {
@@ -119,6 +289,8 @@ public class LocalSaveManager : BaseSystemManager<LocalSaveManager>
     public static LocalSaveCurrency Currency => Instance != null ? Instance.currency : null;
     private LocalSavePurchase purchase;
     public static LocalSavePurchase Purchase => Instance != null ? Instance.purchase : null;
+    private LocalSaveBattle battle;
+    public static LocalSaveBattle Battle => Instance != null ? Instance.battle : null;
 
 
     protected override void CompleteInitialization()
@@ -137,7 +309,7 @@ public class LocalSaveManager : BaseSystemManager<LocalSaveManager>
     /// DB 데이터로 로드 및 펜딩 데이터 탐색 후 있으면 데이터 선택.
     /// </summary>
     /// <returns></returns>
-    public async Task LoadAll(bool dbFirst)
+    public async UniTask LoadAll(bool dbFirst)
     {
         foreach (var file in Directory.GetFiles(Application.persistentDataPath, "*.tmp"))
         {
@@ -146,7 +318,9 @@ public class LocalSaveManager : BaseSystemManager<LocalSaveManager>
 
         allDataClasses.Clear();
 
+        currency = await SetData<LocalSaveCurrency>(dbFirst);
         purchase = await SetData<LocalSavePurchase>(dbFirst);
+        battle = await SetData<LocalSaveBattle>(dbFirst);
 
         //Pending Data Check
         // var pendingPlayerItem = await LoadAsync<LocalSavePlayerItem>(true);
@@ -222,7 +396,7 @@ public class LocalSaveManager : BaseSystemManager<LocalSaveManager>
             });
     }
 
-    public async Task ReloadGame()
+    public async UniTask ReloadGame()
     {
         Dispose();
 
@@ -374,7 +548,7 @@ public class LocalSaveManager : BaseSystemManager<LocalSaveManager>
         }
     }
 
-    public async Task<T> SetData<T>(bool dbFirst) where T : ILocalSave, new()
+    public async UniTask<T> SetData<T>(bool dbFirst) where T : ILocalSave, new()
     {
         T data;
 
@@ -400,7 +574,7 @@ public class LocalSaveManager : BaseSystemManager<LocalSaveManager>
     }
 
 
-    public async Task<T> LoadDBStoreData<T>(string fileName) where T : ILocalSave
+    public async UniTask<T> LoadDBStoreData<T>(string fileName) where T : ILocalSave
     {
 #if !UCS_NO
         byte[] ucs = await DbStoreManager.Instance.LoadDataAsync(fileName);
@@ -427,7 +601,7 @@ public class LocalSaveManager : BaseSystemManager<LocalSaveManager>
         SaveRequest(true);
     }
 
-    public async Task SaveAll(bool dbSave, bool pendingData)
+    public async UniTask SaveAll(bool dbSave, bool pendingData)
     {
         foreach (var c in allDataClasses)
         {
@@ -439,7 +613,7 @@ public class LocalSaveManager : BaseSystemManager<LocalSaveManager>
     {
         await SaveAll(saveDB, false);
     }
-    public async Task<T> LoadAsync<T>(bool pendingData = false) where T : ILocalSave, new()
+    public async UniTask<T> LoadAsync<T>(bool pendingData = false) where T : ILocalSave, new()
     {
         string path = GetFilePath<T>(pendingData);
         string backupPath = path + ".bak";

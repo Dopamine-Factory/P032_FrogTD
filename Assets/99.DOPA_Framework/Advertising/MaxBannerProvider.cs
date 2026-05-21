@@ -174,11 +174,9 @@ public class MaxBannerProvider : MonoBehaviour, IBannerProvider
         if (Mathf.Abs(lastReportedBannerHeight - newHeight) > 0.1f)
         {
             lastReportedBannerHeight = newHeight;
-            if (GameManager.Instance?.EnhancedSafeArea != null)
-            {
-                GameManager.Instance.EnhancedSafeArea.BannerHeightPixels = newHeight;
-                Debug.Log($"[MaxBanner] SafeArea updated: {newHeight:F0}px");
-            }
+
+            EnhancedSafeAreaRegister.Instance.UpdateBannerHeight(newHeight);
+            Debug.Log($"[MaxBanner] SafeArea updated: {newHeight:F0}px");
         }
     }
 

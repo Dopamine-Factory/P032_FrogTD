@@ -79,8 +79,6 @@ public class CurrencyUI : MonoBehaviour
     private void OnShopShortcutButtonClicked()
     {
         Debug.Log($"CurrencyUI shop shortcut button clicked for currency: {currencyID}");
-
-        UIManager.Instance.ShopPopupOnOff(true);
     }
 
 #if UNITY_EDITOR

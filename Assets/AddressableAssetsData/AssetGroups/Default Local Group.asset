@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: 28a5af73d7a7a46928e3d6a58c0f24c5
   m_SerializeEntries:
+  - m_GUID: 1445013a34349469aa8f688cc800225a
+    m_Address: 300001
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Projectiles
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 3c656b9b2fdcc43d6b6e3ee365af8137
     m_Address: StageData
     m_ReadOnly: 0
@@ -22,6 +28,11 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 40973daa08d354f8890725ea9567c940
     m_Address: Monster
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5bc326db4d376431a8241801765944b8
+    m_Address: Hero
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
@@ -34,6 +45,17 @@ MonoBehaviour:
     m_Address: Atlas
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ac870dfd0c4184c73a0408b51c1c71d9
+    m_Address: Projectile
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ffdb9128bc4504340a16a375df00534b
+    m_Address: 100001
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - Heros
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 732d2016d744447739ec96d80543a77e, type: 2}

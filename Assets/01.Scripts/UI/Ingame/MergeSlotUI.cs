@@ -1,111 +1,128 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using System;
-using System.Collections;
+using TMPro;
+using static LocalSaveBattle;
+using UnityEngine.SocialPlatforms;
 
 /// <summary>
-/// 머지 그리드 개별 슬롯 UI
+/// 하단 28칸 머지 그리드 슬롯 하나.
+/// 잠금(locked)/개방(unlocked) 상태를 가지며
+/// 잠금 상태에서는 드래그/드롭 불가.
 /// </summary>
-public class MergeSlotUI : MonoBehaviour, IPointerClickHandler
+[RequireComponent(typeof(Image))]
+public class MergeSlotUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    [Header("Slot Visuals")]
-    [SerializeField] private Image bgImage;
-    [SerializeField] private Image lockIcon;
-    [SerializeField] private GameObject cannonRoot;      // 캐논 표시 루트
-    [SerializeField] private Image cannonIcon;           // 캐논 이미지
-    [SerializeField] private Text levelText;             // 레벨 텍스트
-    [SerializeField] private Image selectedBorder;       // 선택 테두리
+    // ── UI 참조 ──────────────────────────────────────────────────
+    [SerializeField] protected GameObject weaponSlot;   // 자식 오브젝트: 무기 아이콘 + 레벨 텍스트
+    [SerializeField] protected Image weaponIcon;
+    [SerializeField] protected TextMeshProUGUI lvTxt;
+    [SerializeField] protected GameObject lockOverlay;
 
-    [Header("Slot Colors")]
-    [SerializeField] private Color emptyColor    = new Color(0.79f, 0.72f, 0.59f, 1f);
-    [SerializeField] private Color lockedColor   = new Color(0.70f, 0.63f, 0.52f, 1f);
-    [SerializeField] private Color hasCannonColor= new Color(0.82f, 0.75f, 0.61f, 1f);
+    // ── 상태 ────────────────────────────────────────────────────
+    public int Index { get; protected set; } = -1; // 그리드 내 인덱스 (0~27)
+    public WeaponData Data { get; protected set; } = new WeaponData { weaponType = WeaponType.None, level = 0 };
+    public bool IsLocked { get; protected set; } = true;
 
-    [Header("Cannon Level Colors")]
-    [SerializeField] private Color[] levelColors = new Color[]
+    // ── 보드 참조 ────────────────────────────────────────────────
+    public MergeBoard Board { get; set; }
+
+
+    void Awake()
     {
-        new Color(0.91f, 0.25f, 0.25f, 1f), // Lv1 빨강
-        new Color(0.91f, 0.47f, 0.13f, 1f), // Lv2 주황
-        new Color(0.91f, 0.78f, 0.13f, 1f), // Lv3 노랑
-        new Color(0.25f, 0.78f, 0.25f, 1f), // Lv4 초록
-        new Color(0.25f, 0.50f, 0.91f, 1f), // Lv5 파랑
-        new Color(0.56f, 0.25f, 0.91f, 1f), // Lv6 보라
-        new Color(0.91f, 0.25f, 0.63f, 1f), // Lv7 분홍
-    };
+        // 기본값: 잠금
+        ApplyLockVisual();
+    }
 
-    private int slotIndex;
-    private bool isLocked;
-    private Action onClickCallback;
-    private RectTransform rectTransform;
-
-    public void Init(int index, bool locked, Action onClick)
+    // ── 잠금/개방 ────────────────────────────────────────────────
+    public void Unlock()
     {
-        slotIndex = index;
-        isLocked = locked;
-        onClickCallback = onClick;
-        rectTransform = GetComponent<RectTransform>();
+        IsLocked = false;
+        ApplyLockVisual();
+    }
 
-        if (isLocked)
+    public void Lock()
+    {
+        IsLocked = true;
+        ApplyLockVisual();
+    }
+
+    protected void ApplyLockVisual()
+    {
+        lockOverlay.SetActive(IsLocked);
+        weaponSlot.SetActive(!IsLocked);
+
+        if (!IsLocked) Refresh();
+    }
+
+    // ── 데이터 갱신 ──────────────────────────────────────────────
+    public void SetIndex(int idx)
+    {
+        Index = idx;
+    }
+
+    public void Initialize(MergeBoardInfo data)
+    {
+        IsLocked = data.IsUnlocked;
+        Data = new WeaponData { weaponType = data.WeaponData.weaponType, level = data.WeaponData.level };
+
+        ApplyLockVisual();
+    }
+
+    public virtual void SetData(WeaponType type, int level)
+    {
+        if (IsLocked) return;
+
+        Data = new WeaponData { weaponType = type, level = level };
+       
+        LocalSaveManager.Battle.SetMergeBoardWeapon(Index, Data);
+        
+        Refresh();
+    }
+
+    public void Clear()
+    {
+        Data = new WeaponData { weaponType = WeaponType.None, level = 0 };
+
+        Refresh();
+    }
+
+    protected virtual void Refresh()
+    {
+        bool has = !Data.IsEmpty;
+
+        if (weaponSlot != null) weaponSlot.SetActive(has);
+        if (has)
         {
-            bgImage.color = lockedColor;
-            if (lockIcon) lockIcon.gameObject.SetActive(true);
-            if (cannonRoot) cannonRoot.SetActive(false);
+            int spriteIndex = Data.level > 3 ? 3 : Data.level;
+            string spriteName = $"Weapon{spriteIndex}";
+            var sprite = ResourceManager.Instance.GetSprite(spriteName);
+
+            if (weaponIcon != null) weaponIcon.sprite = sprite;
+            if (lvTxt != null) lvTxt.text = $"Lv.{Data.level}";
         }
     }
 
-    public void Refresh(int level, bool selected)
+    // ── 드래그 ──────────────────────────────────────────────────
+    public void OnBeginDrag(PointerEventData e)
     {
-        if (isLocked) return;
+        if (IsLocked || Data.IsEmpty) return;
 
-        bool hasCannon = level > 0;
+        weaponSlot.SetActive(false);
 
-        bgImage.color = hasCannon ? hasCannonColor : emptyColor;
-        if (cannonRoot) cannonRoot.SetActive(hasCannon);
-        if (selectedBorder) selectedBorder.gameObject.SetActive(selected);
-
-        if (hasCannon)
-        {
-            if (levelText)
-                levelText.text = level.ToString();
-
-            if (cannonIcon)
-            {
-                int colorIdx = Mathf.Clamp(level - 1, 0, levelColors.Length - 1);
-                cannonIcon.color = levelColors[colorIdx];
-            }
-        }
+        Board.OnMergeSlotBeginDrag(this);
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    public void OnDrag(PointerEventData eventData)
     {
-        if (isLocked) return;
-        onClickCallback?.Invoke();
+        // 드래그 중인 마우스 데이터를 보드로 전달합니다.
+        Board.OnMergeSlotDrag(eventData);
     }
 
-    public void PlayMergeEffect()
+    // 마우스를 뗄 때 발생합니다.
+    public void OnEndDrag(PointerEventData eventData)
     {
-        StopAllCoroutines();
-        StartCoroutine(MergePulse());
-    }
-
-    private IEnumerator MergePulse()
-    {
-        float duration = 0.25f;
-        float elapsed = 0f;
-        Vector3 originalScale = Vector3.one;
-        Vector3 peakScale = Vector3.one * 1.18f;
-
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = elapsed / duration;
-            float scale = t < 0.5f
-                ? Mathf.Lerp(1f, 1.18f, t * 2f)
-                : Mathf.Lerp(1.18f, 1f, (t - 0.5f) * 2f);
-            rectTransform.localScale = Vector3.one * scale;
-            yield return null;
-        }
-        rectTransform.localScale = originalScale;
+        // 보드에게 드롭 로직을 처리하라고 알립니다.
+        Board.DropDragMergeSlot(Data, eventData);
     }
 }

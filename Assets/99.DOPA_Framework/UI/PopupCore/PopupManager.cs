@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -381,8 +380,7 @@ public class PopupManager : MonoBehaviour
 
         popup.InitializeForAddressables(addressKey, pool.warmHandle, true);
         popup.AssignCanvas(canvasPool.canvas);
-        if (UIManager.Instance != null)
-            popup.RegisterToSafeArea(UIManager.Instance.enhancedSafeArea);
+        popup.RegisterToSafeArea(GetComponent<EnhancedSafeArea>());
 
 
         onCreated?.Invoke(popup);

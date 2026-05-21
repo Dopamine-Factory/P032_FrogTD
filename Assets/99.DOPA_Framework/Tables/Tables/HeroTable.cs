@@ -11,6 +11,7 @@ using UnityEngine.AddressableAssets;
 public struct Hero_form
 {
     public uint id;
+    public string resource_name;
     public string name_code;
     public float atk_interval;
     public float atk;
@@ -32,51 +33,6 @@ public class HeroTable : IDataManager<uint, Hero_form>
     _data = JsonConvert.DeserializeObject<List<Hero_form>>(json);
     BuildDictionary();
     onProgress?.Invoke(1);
-    }
-    private async Task LoadEditorData(string path, Action<float> onProgress)
-    {
-        try
-        {
-            await Task.Yield();
-            byte[] encrypted = File.ReadAllBytes(path);
-            byte[] decrypted = CryptoUtility.Decrypt(encrypted, _encryptionKey);
-            string json = GZipCompression.Decompress(decrypted);
-            _data = JsonConvert.DeserializeObject<List<Hero_form>>(json);
-            BuildDictionary();
-            onProgress?.Invoke(1f);
-        }
-        catch (Exception e)
-        {
-            TableErrorHandler.HandleError(TableName, e);
-        }
-    }
-    private async Task LoadAndroidData(string path, Action<float> onProgress)
-    {
-        using (UnityWebRequest request = UnityWebRequest.Get(path))
-        {
-            request.downloadHandler = new DownloadHandlerBuffer();
-            var operation = request.SendWebRequest();
-            while (!operation.isDone)
-            {
-                onProgress?.Invoke(request.downloadProgress);
-                await Task.Delay(100);
-            }
-
-            if (request.result == UnityWebRequest.Result.Success)
-            {
-                byte[] encrypted = request.downloadHandler.data;
-                byte[] decrypted = CryptoUtility.Decrypt(encrypted, _encryptionKey);
-                string json = GZipCompression.Decompress(decrypted);
-                _data = JsonConvert.DeserializeObject<List<Hero_form>>(json);
-                BuildDictionary();
-                onProgress?.Invoke(1f);
-            }
-            else
-            {
-                TableErrorHandler.HandleError(TableName, 
-                    new Exception($"Network error: {request.error}"));
-            }
-        }
     }
     private void BuildDictionary()
     {

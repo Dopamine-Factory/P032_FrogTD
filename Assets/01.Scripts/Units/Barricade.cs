@@ -1,16 +1,23 @@
-using System;
+﻿using System;
+using UniRx;
 using UnityEngine;
 
 public class Barricade : MonoBehaviour
 {
-    public double hp = 10;
+    public ReactiveProperty<float> HP = new ReactiveProperty<float>(10) { Value = 10 };
+
+    public Action DeadCallback;
 
     public void Hit(float atk)
     {
-        hp -= atk;
-        if(hp <= 0)
+        if (HP.Value <= 0) return;
+
+        HP.Value -= atk;
+
+        if (HP.Value <= 0)
         {
-            // GameManager.Instance.RequestGameOver();
+            HP.Value = 0;
+            DeadCallback?.Invoke();
         }
     }
 }

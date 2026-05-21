@@ -7,9 +7,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance => instance;
 
     [Header("System References")]
-    [SerializeField] private EnhancedSafeArea enhancedSafeArea;
     [SerializeField] private GameBase currentGame;
-    public EnhancedSafeArea EnhancedSafeArea => enhancedSafeArea;
 
     GameStateController gameState;
     public static GameStateController GameState => instance.gameState;
